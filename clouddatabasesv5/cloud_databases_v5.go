@@ -3327,6 +3327,138 @@ func UnmarshalCreateDatabaseUserResponse(m map[string]json.RawMessage, result in
 	return
 }
 
+// LogicalReplicationSlot : LogicalReplicationSlot struct
+type LogicalReplicationSlot struct {
+	// name of the replication slot.
+	Name *string `json:"name" validate:"required"`
+
+	// name of the database the replication slot is created on
+	DatabaseName *string `json:"database_name" validate:"required"`
+
+	// creating a replication slot is only supported for use with wal2json
+	PluginType *string `json:"plugin_type" validate:"required"`
+}
+
+// NewCreateDatabaseUserOptions : Instantiate CreateDatabaseUserOptions
+func (*CloudDatabasesV5) NewCreateLogicalReplicationSlotOptions(id string) *CreateLogicalReplicationSlotOptions {
+	return &CreateLogicalReplicationSlotOptions{
+		ID: core.StringPtr(id),
+	}
+}
+
+// SetID : Allow user to set ID
+func (_options *CreateLogicalReplicationSlotOptions) SetID(id string) *CreateLogicalReplicationSlotOptions {
+	_options.ID = core.StringPtr(id)
+	return _options
+}
+
+// SetUser : Allow user to set User
+func (_options *CreateLogicalReplicationSlotOptions) SetLogicalReplicationSlot(logicalReplicationSlot *LogicalReplicationSlot) *CreateLogicalReplicationSlotOptions {
+	_options.LogicalReplicationSlot = logicalReplicationSlot
+	return _options
+}
+
+// SetHeaders : Allow user to set Headers
+func (options *CreateLogicalReplicationSlotOptions) SetHeaders(param map[string]string) *CreateLogicalReplicationSlotOptions {
+	options.Headers = param
+	return options
+}
+
+// CreateDatabaseUserOptions : The CreateDatabaseUser options.
+type CreateLogicalReplicationSlotOptions struct {
+	// Deployment ID.
+	ID *string `json:"id" validate:"required,ne="`
+
+	LogicalReplicationSlot *LogicalReplicationSlot `json:"logicalr,omitempty"`
+
+	Headers map[string]string
+}
+
+// CreateLogicalReplicationSlotResponse : CreateLogicalReplicationSlotResponse struct
+type CreateLogicalReplicationSlotResponse struct {
+	Task *Task `json:"task,omitempty"`
+}
+
+// UnmarshalCreateLogicalReplicationSlotResponse unmarshals an instance of CreateLogicalReplicationSlotResponse from the specified map of raw messages.
+func UnmarshalCreateLogicalReplicationSlotResponse(m map[string]json.RawMessage, result interface{}) (err error) {
+	obj := new(CreateLogicalReplicationSlotResponse)
+	err = core.UnmarshalModel(m, "task", &obj.Task, UnmarshalTask)
+	if err != nil {
+		return
+	}
+	reflect.ValueOf(result).Elem().Set(reflect.ValueOf(obj))
+	return
+}
+
+// CreateLogicalReplicationSlot
+func (cloudDatabases *CloudDatabasesV5) CreateLogicalReplicationSlot(createLogicalReplicationSlotOptions *CreateLogicalReplicationSlotOptions) (result *CreateLogicalReplicationSlotResponse, response *core.DetailedResponse, err error) {
+	return cloudDatabases.CreateLogicalReplicationSlotWithContext(context.Background(), createLogicalReplicationSlotOptions)
+}
+
+// CreateLogicalReplicationSlotWithContext is an alternate form of the CreateLogicalReplicationSlot method which supports a Context parameter
+func (cloudDatabases *CloudDatabasesV5) CreateLogicalReplicationSlotWithContext(ctx context.Context, createLogicalReplicationSlotOptions *CreateLogicalReplicationSlotOptions) (result *CreateLogicalReplicationSlotResponse, response *core.DetailedResponse, err error) {
+	err = core.ValidateNotNil(createLogicalReplicationSlotOptions, "createLogicalReplicationSlotOptions cannot be nil")
+	if err != nil {
+		return
+	}
+	err = core.ValidateStruct(createLogicalReplicationSlotOptions, "createLogicalReplicationSlotOptions")
+	if err != nil {
+		return
+	}
+
+	pathParamsMap := map[string]string{
+		"id": *createLogicalReplicationSlotOptions.ID,
+	}
+
+	builder := core.NewRequestBuilder(core.POST)
+	builder = builder.WithContext(ctx)
+	builder.EnableGzipCompression = cloudDatabases.GetEnableGzipCompression()
+	_, err = builder.ResolveRequestURL(cloudDatabases.Service.Options.URL, `/deployments/{id}/postgresql/logical_replication_slots`, pathParamsMap)
+	if err != nil {
+		return
+	}
+
+	for headerName, headerValue := range createLogicalReplicationSlotOptions.Headers {
+		builder.AddHeader(headerName, headerValue)
+	}
+
+	sdkHeaders := common.GetSdkHeaders("cloud_databases", "V5", "CreateLogicalReplicationSlot")
+	for headerName, headerValue := range sdkHeaders {
+		builder.AddHeader(headerName, headerValue)
+	}
+	builder.AddHeader("Accept", "application/json")
+	builder.AddHeader("Content-Type", "application/json")
+
+	body := make(map[string]interface{})
+	if createLogicalReplicationSlotOptions.LogicalReplicationSlot != nil {
+		body["logical_replication_slot"] = createLogicalReplicationSlotOptions.LogicalReplicationSlot
+	}
+	_, err = builder.SetBodyContentJSON(body)
+	if err != nil {
+		return
+	}
+
+	request, err := builder.Build()
+	if err != nil {
+		return
+	}
+
+	var rawResponse map[string]json.RawMessage
+	response, err = cloudDatabases.Service.Request(request, &rawResponse)
+	if err != nil {
+		return
+	}
+	if rawResponse != nil {
+		err = core.UnmarshalModel(rawResponse, "", &result, UnmarshalCreateLogicalReplicationSlotResponse)
+		if err != nil {
+			return
+		}
+		response.Result = result
+	}
+
+	return
+}
+
 // DataStaxConnectionURI : DataStaxConnectionURI struct
 type DataStaxConnectionURI struct {
 	Hosts []ConnectionHost `json:"hosts,omitempty"`
